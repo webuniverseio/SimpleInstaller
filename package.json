@@ -1,0 +1,49 @@
+{
+  "name": "SimpleInstaller",
+  "version": "1.0.0",
+  "description": "Download and/or install programs in similar manner to chocolatey or similar installation managers.",
+  "keywords": [
+    "program",
+    "install",
+    "installer",
+    "download",
+    "dependencies",
+    "chocolatey"
+  ],
+  "homepage": "https://github.com/szarouski/SimpleInstaller",
+  "bugs": {
+    "url": "https://github.com/szarouski/SimpleInstaller/issues",
+    "email": "sergey@webuniverse.io"
+  },
+  "license": "Unlicense",
+  "author": {
+    "name": "Sergey Zarouski",
+    "email": "sergey@webuniverse.io",
+    "url": "http://webuniverse.io/"
+  },
+  "main": "src/SimpleInstaller.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/szarouski/SimpleInstaller.git"
+  },
+  "scripts": {
+    "test": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec tests/**/*Test.js"
+  },
+  "dependencies": {
+    "co": "^4.5.1",
+    "colors": "^1.0.3",
+    "request": "^2.54.0",
+    "shelljs": "^0.4.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.1",
+    "istanbul-harmony": "^0.3.12",
+    "lodash": "^3.6.0",
+    "mocha": "^2.2.1",
+    "should": "^5.2.0"
+  },
+  "engines": {
+    "node": ">=0.11.6"
+  }
+}
