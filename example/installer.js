@@ -5,13 +5,13 @@ var co = require('co');
 /**
  * @type {SimpleInstaller|function}
  */
-var SimpleInstaller = require('SimpleInstaller');
+var SimpleInstaller = require('simple-installer');
 var shelljs = require('shelljs');
 /**
  * @type {_.LoDashStatic}
  */
 var _ = require('lodash');
-var ShellErrorHandler = require('SimpleInstaller/src/ShellErrorHandler');
+var ShellErrorHandler = require('simple-installer/src/ShellErrorHandler');
 var shellHandler = new ShellErrorHandler(shelljs);
 var config = require('./config');
 var simpleInstalls = [

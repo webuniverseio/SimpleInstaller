@@ -1,14 +1,13 @@
 'use strict';
-var shell = require('shelljs');
-var ShellErrorHandler = require('SimpleInstaller/src/ShellErrorHandler');
-var shellHandler = new ShellErrorHandler(shell);
-var _ = require('lodash');
-var path = require('path');
-
 /**
  * @type {SimpleInstaller|function}
  */
-var SimpleInstaller = require('SimpleInstaller');
+var SimpleInstaller = require('simple-installer');
+var shell = require('shelljs');
+var ShellErrorHandler = require('simple-installer/src/ShellErrorHandler');
+var shellHandler = new ShellErrorHandler(shell);
+var _ = require('lodash');
+var path = require('path');
 
 //noinspection SpellCheckingInspection
 module.exports = [{
