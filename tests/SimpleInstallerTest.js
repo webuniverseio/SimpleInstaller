@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @type {SimpleInstaller|exports|module.exports}
+ * @type {SimpleInstaller|function|exports|module.exports}
  */
 var SimpleInstaller = require('../src/SimpleInstaller');
 var fs = require('fs');
@@ -26,16 +26,17 @@ describe('SimpleInstaller constructor', function () {
 		SimpleInstaller.tempFolder.should.be.exactly('temp');
 	});
 	it('should have default _simulateFsError flag', function() {
+		//noinspection JSUnresolvedVariable
 		SimpleInstaller._simulateFsError.should.be.exactly(false);
 	});
 });
 describe('SimpleInstaller instance', function () {
-	it('should have proper installerInfo', function() {
+	it('should have proper info', function() {
 		var info = {
 			name: 'ruby'
 		};
-		new SimpleInstaller({installerInfo: info}).installerInfo.should.be.exactly(info);
-		new SimpleInstaller({installerInfo: info}).name.should.be.exactly(info.name);
+		new SimpleInstaller(info).info.should.be.exactly(info);
+		new SimpleInstaller(info).name.should.be.exactly(info.name);
 	});
 	it('should change installMessage based on params', function() {
 		var infoWithMessage = {
@@ -45,12 +46,10 @@ describe('SimpleInstaller instance', function () {
 		var infoWithoutMessage = {
 			name: 'ruby'
 		};
-		new SimpleInstaller({
-			installerInfo: infoWithMessage
-		}).installMessage.should.be.exactly(infoWithMessage.installMessage);
-		new SimpleInstaller({
-			installerInfo: infoWithoutMessage
-		}).installMessage.should.be.exactly('installing ' + infoWithoutMessage.name);
+		new SimpleInstaller(infoWithMessage).installMessage.should.be.exactly(infoWithMessage.installMessage);
+		new SimpleInstaller(infoWithoutMessage).installMessage.should.be.exactly(
+			'installing ' + infoWithoutMessage.name
+		);
 	});
 	it('should change skipDownload based on link existence', function() {
 		var infoWithLink = {
@@ -60,8 +59,8 @@ describe('SimpleInstaller instance', function () {
 		var infoWithoutLink = {
 			name: 'ruby'
 		};
-		new SimpleInstaller({installerInfo: infoWithLink}).skipDownload.should.be.exactly(false);
-		new SimpleInstaller({installerInfo: infoWithoutLink}).skipDownload.should.be.exactly(true);
+		new SimpleInstaller(infoWithLink).skipDownload.should.be.exactly(false);
+		new SimpleInstaller(infoWithoutLink).skipDownload.should.be.exactly(true);
 	});
 	it('should change tempFolder based on params', function() {
 		var infoWithTempFolder = {
@@ -71,20 +70,16 @@ describe('SimpleInstaller instance', function () {
 		var infoWithoutTempFolder = {
 			name: 'ruby'
 		};
-		new SimpleInstaller({
-			installerInfo: infoWithTempFolder
-		}).tempFolder.should.be.exactly(infoWithTempFolder.tempFolder);
-		new SimpleInstaller({
-			installerInfo: infoWithoutTempFolder
-		}).tempFolder.should.be.exactly(SimpleInstaller.tempFolder);
+		new SimpleInstaller(infoWithTempFolder).tempFolder.should.be.exactly(infoWithTempFolder.tempFolder);
+		new SimpleInstaller(infoWithoutTempFolder).tempFolder.should.be.exactly(SimpleInstaller.tempFolder);
 	});
 	it('should verify if program is installed', function() {
-		new SimpleInstaller({installerInfo: {
+		new SimpleInstaller({
 			name: 'node'
-		}}).isInstalled().should.be.exactly(true);
-		new SimpleInstaller({installerInfo: {
+		}).isInstalled().should.be.exactly(true);
+		new SimpleInstaller({
 			name: 'i-dont-exist'
-		}}).isInstalled().should.be.exactly(false);
+		}).isInstalled().should.be.exactly(false);
 	});
 	it('should run update if exists', function(done) {
 		co(function* () {
@@ -96,7 +91,7 @@ describe('SimpleInstaller instance', function () {
 					done();
 				}
 			};
-			var installer = new SimpleInstaller({installerInfo: info});
+			var installer = new SimpleInstaller(info);
 			yield installer.runUpdateIfExists();
 		});
 	});
@@ -107,9 +102,10 @@ describe('SimpleInstaller instance', function () {
 				prefix: 'npm i ',
 				name: 'simple-permissions'
 			};
-			var installer = new SimpleInstaller({installerInfo: info});
+			var installer = new SimpleInstaller(info);
 			installer.installProgram();
 
+			//noinspection JSUnresolvedVariable
 			(typeof require('simple-permissions').grant).should.be.exactly('function');
 
 			var uninstallInfo = {
@@ -117,9 +113,10 @@ describe('SimpleInstaller instance', function () {
 				name: 'npm',
 				postfix: ' uninstall simple-permissions'
 			};
-			var uninstaller = new SimpleInstaller({installerInfo: uninstallInfo});
+			var uninstaller = new SimpleInstaller(uninstallInfo);
 			uninstaller.installProgram();
 
+			//noinspection JSUnresolvedFunction
 			should.throws(function () {
 				delete require.cache[require.resolve('simple-permissions')];
 				require('simple-permissions');
@@ -148,10 +145,10 @@ describe('SimpleInstaller instance', function () {
 		it('should download a file in temp folder', function(done) {
 			this.timeout(15000);
 			co(function* () {
-				var installer = new SimpleInstaller({installerInfo: {
+				var installer = new SimpleInstaller({
 					link: 'https://github.com/arturadib/shelljs/archive/72e34fa881d6ffb9fb3ece2b89743b2c3df7f020.zip',
 					name: 'shelljs.zip'
-				}});
+				});
 				yield installer.downloadProgram();
 				var archiveDescriptor = yield fs.open.bind(fs, path.join(installer.tempFolder, installer.name), 'r');
 				(typeof archiveDescriptor).should.be.exactly('number');
@@ -161,10 +158,11 @@ describe('SimpleInstaller instance', function () {
 		});
 		it('should delete file if cannot download', function(done) {
 			this.timeout(15000);
-			var installer = new SimpleInstaller({installerInfo: {
+			var installer = new SimpleInstaller({
 				link: 'http://localhost/72e34fa881d6ffb9fb3ece2b89743b2c3df7f020.zip',
 				name: 'shelljs.zip'
-			}});
+			});
+			//noinspection JSUnresolvedFunction
 			co(function* () {
 				yield installer.downloadProgram();
 			}).catch(function (ex) {
@@ -176,10 +174,11 @@ describe('SimpleInstaller instance', function () {
 		});
 		it('should delete file if status code is not 200', function(done) {
 			this.timeout(15000);
-			var installer = new SimpleInstaller({installerInfo: {
+			var installer = new SimpleInstaller({
 				link: 'http://www.google.com/not-found',
 				name: 'shelljs.txt'
-			}});
+			});
+			//noinspection JSUnresolvedFunction
 			co(function* () {
 				yield installer.downloadProgram();
 			}).catch(function (ex) {
@@ -192,11 +191,11 @@ describe('SimpleInstaller instance', function () {
 		it('should go to catch statement if file cannot be deleted', function(done) {
 			this.timeout(15000);
 			var installer = new SimpleInstaller({
-				installerInfo: {
 					link: 'http://www.google.com/not-found',
 					name: 'shelljs.txt'
 				}
-			});
+);
+			//noinspection JSUnresolvedFunction
 			co(function* () {
 				SimpleInstaller._simulateFsError = true;
 				yield installer.downloadProgram();
@@ -217,13 +216,12 @@ describe('SimpleInstaller instance', function () {
 			this.timeout(15000);
 			cleanUp();
 			var installer = new SimpleInstaller({
-				installerInfo: {
 					link: 'https://github.com/arturadib/shelljs/archive/72e34fa881d6ffb9fb3ece2b89743b2c3df7f020.zip',
 			        prefix: 'echo ',
 					name: 'shelljs.zip',
 					postfix: ' is ready to be installed via postfix'
 				}
-			});
+);
 			co(function* () {
 				yield installer.downloadAndInstall();
 				var archiveDescriptor = yield fs.open.bind(fs, path.join(installer.tempFolder, installer.name), 'r');
@@ -239,7 +237,7 @@ describe('SimpleInstaller instance', function () {
 					prefix: 'npm i co&&cd ' + SimpleInstaller.tempFolder + '&&node --harmony ../tests/',
 					name: 'create-file.js'
 				};
-				var installer = new SimpleInstaller({installerInfo: info});
+				var installer = new SimpleInstaller(info);
 				yield installer.chooseInstallProcess();
 
 				var archiveDescriptor = yield fs.open.bind(fs, path.join(installer.tempFolder, 'temp.txt'), 'r');
@@ -251,13 +249,12 @@ describe('SimpleInstaller instance', function () {
 		it('should choose to download file and install', function(done) {
 			this.timeout(15000);
 			var installer = new SimpleInstaller({
-				installerInfo: {
 					link: 'https://github.com/arturadib/shelljs/archive/72e34fa881d6ffb9fb3ece2b89743b2c3df7f020.zip',
 					prefix: 'echo ',
 					name: 'shelljs.zip',
 					postfix: ' is ready to be installed via postfix'
 				}
-			});
+);
 			co(function* () {
 				yield installer.chooseInstallProcess();
 				var archiveDescriptor = yield fs.open.bind(fs, path.join(installer.tempFolder, installer.name), 'r');
@@ -269,7 +266,6 @@ describe('SimpleInstaller instance', function () {
 		it('should not install if program already exists', function(done) {
 			this.timeout(15000);
 			var installer = new SimpleInstaller({
-				installerInfo: {
 					link: 'https://localhost',
 					name: 'node',
 					update: function* () {
@@ -277,11 +273,11 @@ describe('SimpleInstaller instance', function () {
 							prefix: 'npm i co&&cd ' + SimpleInstaller.tempFolder + '&&node --harmony ../tests/',
 							name: 'create-file.js'
 						};
-						var installer = new SimpleInstaller({installerInfo: info});
+						var installer = new SimpleInstaller(info);
 						yield installer.chooseInstallProcess();
 					}
 				}
-			});
+);
 			co(function* () {
 				yield installer.run();
 				var archiveDescriptor = yield fs.open.bind(fs, path.join(installer.tempFolder, 'temp.txt'), 'r');
@@ -293,11 +289,10 @@ describe('SimpleInstaller instance', function () {
 		it('should install if program does not exist in the path', function(done) {
 			this.timeout(15000);
 			var installer = new SimpleInstaller({
-				installerInfo: {
 					prefix: 'npm i co&&cd ' + SimpleInstaller.tempFolder + '&&node --harmony ../tests/',
 					name: 'create-file.js'
 				}
-			});
+);
 			co(function* () {
 				yield installer.run();
 				var archiveDescriptor = yield fs.open.bind(fs, path.join(installer.tempFolder, 'temp.txt'), 'r');

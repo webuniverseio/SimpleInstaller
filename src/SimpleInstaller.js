@@ -2,22 +2,22 @@
 
 var fs = require('fs');
 var co = require('co');
-var shell = require('shelljs');
+var shelljs = require('shelljs');
 var request = require('request');
 var ShellErrorHandler = require('./ShellErrorHandler');
-var shellHandler = new ShellErrorHandler(shell);
+var shellHandler = new ShellErrorHandler(shelljs);
 require('colors');
 
 module.exports = SimpleInstaller;
 
 /**
- * @param {{installerInfo: {}}} params
+ * @param {{?link: string, name: string, ?tempFolder: string,
+  * ?installMessage: string, ?prefix: string, ?postfix: string}} info
  * @class SimpleInstaller
  */
-function SimpleInstaller(params) {
-	var info = params.installerInfo;
+function SimpleInstaller(info) {
 	this.skipDownload = !info.link;
-	this.installerInfo = info;
+	this.info = info;
 	this.name = info.name;
 	this.tempFolder = info.tempFolder || SimpleInstaller.tempFolder;
 	this.installMessage = info.installMessage || 'installing ' + info.name;
@@ -35,14 +35,14 @@ SimpleInstaller.prototype.run = function* () {
 	}
 };
 SimpleInstaller.prototype.isInstalled = function () {
-	return !!shell.which(this.name);
+	return !!shelljs.which(this.name);
 };
 SimpleInstaller.prototype.runUpdateIfExists = function* () {
-	var installerInfo = this.installerInfo;
+	var info = this.info;
 	/* istanbul ignore else  */
-	if (installerInfo.update) {
+	if (info.update) {
 		console.log(('running update for ' + this.name).cyan);
-		yield installerInfo.update();
+		yield info.update();
 	}
 };
 SimpleInstaller.prototype.chooseInstallProcess = function* () {
@@ -54,27 +54,27 @@ SimpleInstaller.prototype.chooseInstallProcess = function* () {
 };
 SimpleInstaller.prototype.downloadAndInstall = function* () {
 	var tempFolder = this.tempFolder;
-	if (!shell.test('-d', tempFolder)) {
-		shell.mkdir(tempFolder);
+	if (!shelljs.test('-d', tempFolder)) {
+		shelljs.mkdir(tempFolder);
 		shellHandler.throwIfHasErrors('can\'t create a ' + tempFolder + ' folder');
 	}
 	yield this.downloadProgram();
 	shellHandler.throwIfHasErrors('can\'t download ' + this.name);
-	shell.exec('cd ' + tempFolder);
+	shelljs.exec('cd ' + tempFolder);
 	this.installProgram();
 };
 SimpleInstaller.prototype.downloadProgram = function* () {
-	var installerInfo = this.installerInfo;
-	console.log(('downloading ' + installerInfo.name + ', it might take a while, please be patient').cyan);
-	yield download.bind(null, installerInfo.link, this.tempFolder + '/' + installerInfo.name);
+	var info = this.info;
+	console.log(('downloading ' + info.name + ', it might take a while, please be patient').cyan);
+	yield download.bind(null, info.link, this.tempFolder + '/' + info.name);
 };
 SimpleInstaller.prototype.installProgram = function () {
-	var installerInfo = this.installerInfo;
+	var info = this.info;
 	console.log(this.installMessage.cyan);
-	var prefix = installerInfo.prefix || '';
-	var postfix = installerInfo.postfix || '';
-	shell.exec(prefix + installerInfo.name + postfix);
-	shellHandler.throwIfHasErrors('can\'t install program ' + installerInfo.name);
+	var prefix = info.prefix || '';
+	var postfix = info.postfix || '';
+	shelljs.exec(prefix + info.name + postfix);
+	shellHandler.throwIfHasErrors('can\'t install program ' + info.name);
 };
 SimpleInstaller._simulateFsError = false;
 
@@ -86,6 +86,7 @@ function download(url, dest, cb) {
 	function deleteFile(err) { // Handle errors
 		// Delete the file async. (But we don't check the result)
 		console.log(err);
+		//noinspection JSUnresolvedFunction
 		co(function* () {
 			if (SimpleInstaller._simulateFsError) {
 				throw new Error('Simulated file system error');

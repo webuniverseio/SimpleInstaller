@@ -6,16 +6,13 @@ var co = require('co');
  * @type {SimpleInstaller|function}
  */
 var SimpleInstaller = require('SimpleInstaller');
-/**
- * @type {shelljs}
- */
-var shell = require('shelljs');
+var shelljs = require('shelljs');
 /**
  * @type {_.LoDashStatic}
  */
 var _ = require('lodash');
 var ShellErrorHandler = require('SimpleInstaller/src/ShellErrorHandler');
-var shellHandler = new ShellErrorHandler(shell);
+var shellHandler = new ShellErrorHandler(shelljs);
 var config = require('./config');
 var simpleInstalls = [
 	{
@@ -26,13 +23,11 @@ var simpleInstalls = [
 
 /**
  * @callback runInstaller
- * @param {Object} data
+ * @param {Object} info
  */
-function* runInstaller(data) {
-	var installer = new SimpleInstaller({
-		installerInfo: data
-	});
-	if (!data.condition || data.condition()) {
+function* runInstaller(info) {
+	var installer = new SimpleInstaller(info);
+	if (!info.condition || info.condition()) {
 		yield installer.run();
 	}
 }
@@ -42,10 +37,11 @@ function* runInstaller(data) {
  */
 function runSimpleSetup(setup) {
 	console.log(setup.command.cyan);
-	shell.exec(setup.command);
+	shelljs.exec(setup.command);
 	shellHandler.throwIfHasErrors(setup.errorMessage);
 }
 
+//noinspection JSUnresolvedFunction
 /**
  * @callback runCoroutine
  */
@@ -58,7 +54,7 @@ co(function* runCoroutine() {
 
 	_.each(simpleInstalls, runSimpleSetup);
 
-	shell.rm('-rf', SimpleInstaller.tempFolder);
+	shelljs.rm('-rf', SimpleInstaller.tempFolder);
 	shellHandler.throwIfHasErrors(
 		'can\'t delete a ' + SimpleInstaller.tempFolder + ' folder, try to delete it manually'
 	);

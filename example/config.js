@@ -31,11 +31,9 @@ module.exports = [{
 				'please run "gem uninstall sass --force" and try running "npm install" again'
 			);
 
-			var data = _.omit(this, 'update');
-			data.name += '.v2.2.1';
-			yield new SimpleInstaller({
-				installerInfo: data
-			}).run();
+			var info = _.omit(this, 'update');
+			info.name += '.v2.2.1';
+			yield new SimpleInstaller(info).run();
 			shell.exec('gem install sass');
 			shellHandler.throwIfHasErrors(
 				'can\'t install sass for ruby update, ' +
