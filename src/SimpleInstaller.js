@@ -30,7 +30,7 @@ SimpleInstaller.prototype.run = function* () {
 	if (!this.isInstalled()) {
 		yield this.chooseInstallProcess();
 	} else {
-		shell.echo((this.name + ' ok').green);
+		console.log((this.name + ' ok').green);
 		yield this.runUpdateIfExists();
 	}
 };
@@ -41,7 +41,7 @@ SimpleInstaller.prototype.runUpdateIfExists = function* () {
 	var installerInfo = this.installerInfo;
 	/* istanbul ignore else  */
 	if (installerInfo.update) {
-		shell.echo(('running update for ' + this.name).cyan);
+		console.log(('running update for ' + this.name).cyan);
 		yield installerInfo.update();
 	}
 };
@@ -65,12 +65,12 @@ SimpleInstaller.prototype.downloadAndInstall = function* () {
 };
 SimpleInstaller.prototype.downloadProgram = function* () {
 	var installerInfo = this.installerInfo;
-	shell.echo(('downloading ' + installerInfo.name + ', it might take a while, please be patient').cyan);
+	console.log(('downloading ' + installerInfo.name + ', it might take a while, please be patient').cyan);
 	yield download.bind(null, installerInfo.link, this.tempFolder + '/' + installerInfo.name);
 };
 SimpleInstaller.prototype.installProgram = function () {
 	var installerInfo = this.installerInfo;
-	shell.echo(this.installMessage.cyan);
+	console.log(this.installMessage.cyan);
 	var prefix = installerInfo.prefix || '';
 	var postfix = installerInfo.postfix || '';
 	shell.exec(prefix + installerInfo.name + postfix);
