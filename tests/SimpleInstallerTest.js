@@ -13,6 +13,22 @@ var shell = require('shelljs');
 var ShellErrorHandler = require('../src/ShellErrorHandler');
 var shellHandler = new ShellErrorHandler(shell);
 
+before(function () {
+	if (!shell.test('-d', SimpleInstaller.tempFolder)) {
+		shell.mkdir(SimpleInstaller.tempFolder);
+		shellHandler.throwIfHasErrors('can\'t create a ' + SimpleInstaller.tempFolder + ' folder');
+	}
+});
+function cleanUp() {
+	if (shell.test('-d', SimpleInstaller.tempFolder)) {
+		shell.rm('-rf', SimpleInstaller.tempFolder);
+		shellHandler.throwIfHasErrors(
+			'can\'t delete a ' + SimpleInstaller.tempFolder + ' folder, try to delete it manually'
+		);
+	}
+}
+after(cleanUp);
+
 describe('SimpleInstaller constructor', function () {
 	it('should have following prototype methods', function() {
 		_.each([
@@ -126,22 +142,6 @@ describe('SimpleInstaller instance', function () {
 		});
 	});
 	describe('test download process', function () {
-		before(function () {
-			if (!shell.test('-d', SimpleInstaller.tempFolder)) {
-				shell.mkdir(SimpleInstaller.tempFolder);
-				shellHandler.throwIfHasErrors('can\'t create a ' + SimpleInstaller.tempFolder + ' folder');
-			}
-		});
-		function cleanUp() {
-			if (shell.test('-d', SimpleInstaller.tempFolder)) {
-				shell.rm('-rf', SimpleInstaller.tempFolder);
-				shellHandler.throwIfHasErrors(
-					'can\'t delete a ' + SimpleInstaller.tempFolder + ' folder, try to delete it manually'
-				);
-			}
-		}
-		after(cleanUp);
-
 		it('should download a file in temp folder', function(done) {
 			this.timeout(15000);
 			co(function* () {
