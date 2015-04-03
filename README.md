@@ -11,7 +11,7 @@ Download and/or install programs in similar manner to chocolatey or similar inst
 
 License
 - http://unlicense.org/
-________
+
 ##Tests:
 To launch tests you have to run `npm install` then `npm test` or if you prefer `grunt test`.
 
@@ -19,22 +19,22 @@ If you want to contribute make sure you run `grunt githooks` before you commit a
 
 ##API:
 SimpleInstaller exports a constructor, which takes and object with following properties:
-- `installerInfo` - an `info` object
+- `installerInfo` - an `info` object (see below)
 
 Constructor has following prototype methods:
-- `run:generator function` - first it runs `isInstalled`, if result is successful it runs `chooseInstallProcess`, otherwise it runs `runUpdateIfExists`
-- `isInstalled:function` - uses crossplatform version of `which` verifying that `info.name` exists in your path
-- `runUpdateIfExists:generator function` - if `info.update` exists, it will run it. `this` is referring to `info` object
-- `chooseInstallProcess:generator function` - if `info.link` wasn't specified it runs `installProgram`, else it runs `downloadAndInstall`
-- `downloadAndInstall:generator function` - downloads `info.link` and runs `installProgram`
-- `installProgram:function` - concatenates `info.prefix`, `info.name` and `info.postfix` and runs results as a command line
+- `run :generator function` - first it runs `isInstalled`, if result is successful it runs `chooseInstallProcess`, otherwise it runs `runUpdateIfExists`
+- `isInstalled :function` - uses crossplatform version of `which` verifying that `info.name` exists in your path
+- `runUpdateIfExists :generator function` - if `info.update` exists, it will run it. `this` is referring to `info` object
+- `chooseInstallProcess :generator function` - if `info.link` wasn't specified it runs `installProgram`, else it runs `downloadAndInstall`
+- `downloadAndInstall :generator function` - downloads `info.link` and runs `installProgram`
+- `installProgram :function` - concatenates `info.prefix`, `info.name` and `info.postfix` and runs results as a command line
 
 Info object has following properties:
-- `link:string` - (optional) url to installer/executable or any other resource
-- `name:string` - used for progress reporting and for installation process, see `installProgram` for details
-- `prefix:string` - (optional) used for installation process, prepends part of command to `name`, see `installProgram` for details
-- `postfix:string` - (optional) used for installation process, appends part of command to `name`, see `installProgram` for details
-- `update:generator function` - (optional) if program is already installed it runs user code for an update
+- `link :string` - (optional) url to installer/executable or any other resource
+- `name :string` - used for progress reporting and for installation process, see `installProgram` for details
+- `prefix :string` - (optional) used for installation process, prepends part of command to `name`, see `installProgram` for details
+- `postfix :string` - (optional) used for installation process, appends part of command to `name`, see `installProgram` for details
+- `update :generator function` - (optional) if program is already installed it runs user code for an update
 
 ##Examples:
 ```js
@@ -57,4 +57,4 @@ new SimpleInstaller({
    }
 }).installProgram();
 ```
-For more advanced usage check `examples` folder.
+For advanced usage (batch install, update, ...) check `examples` folder.
