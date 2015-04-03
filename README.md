@@ -13,7 +13,7 @@ Download and/or install programs in similar manner to chocolatey or similar inst
 License
 - http://unlicense.org/
 
-##Tests:
+## Tests:
 
 To launch tests you have to run `npm install` then `npm test` or if you prefer `grunt test`.
 
@@ -21,7 +21,7 @@ If you want to contribute make sure to run `grunt githooks` first thing after cl
 It will create pre-commit hook and run tests and jshint before you commit. 
 Please use git flow - create a feature branch for your feature and send a pull request to dev.
 
-##API:
+## API:
 
 SimpleInstaller exports a constructor, which takes and object with following properties:
 - `link :string` - (optional) url to installer/executable or any other resource
@@ -43,7 +43,7 @@ Constructor has following prototype methods:
 - `downloadAndInstall :generator function` - downloads `info.link` and runs `installProgram`
 - `installProgram :function` - concatenates `info.prefix`, `info.name` and `info.postfix` and runs results as a command line
 
-##Examples:
+## Examples:
 
 ```js
 //following will install git on windows using git.inf if git.exe doesn't exist in your path
