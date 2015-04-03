@@ -57,4 +57,4 @@ new SimpleInstaller({
    }
 }).installProgram();
 ```
-For advanced usage (batch install, update, ...) check `examples` folder.
+For advanced usage (batch install, update, ...) check `example` folder.
