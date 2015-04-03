@@ -1,5 +1,5 @@
 {
-  "name": "SimpleInstaller",
+  "name": "simple-installer",
   "version": "1.0.0",
   "description": "Download and/or install programs in similar manner to chocolatey or similar installation managers.",
   "keywords": [
