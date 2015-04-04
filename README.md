@@ -1,6 +1,6 @@
 # Simple installer
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/szarouski/SimpleInstaller?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/szarouski/SimpleInstaller?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  
 Download and/or install programs in similar manner to chocolatey or similar installation managers.
 - crossplatform (tested on windows and debian)
 - downloads files (optional) and runs commands
