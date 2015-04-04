@@ -72,3 +72,5 @@ co(function* () {
 });
 ```
 For advanced usage (batch install, update, ...) check `example` folder.
+
+[![Analytics](https://ga-beacon.appspot.com/UA-61501696-1/szarouski/SimpleInstaller/README)](https://github.com/igrigorik/ga-beacon)
