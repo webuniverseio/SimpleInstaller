@@ -60,7 +60,6 @@ SimpleInstaller.prototype.downloadAndInstall = function* () {
 	}
 	yield this.downloadProgram();
 	shellHandler.throwIfHasErrors('can\'t download ' + this.name);
-	shelljs.exec('cd ' + tempFolder);
 	this.installProgram();
 };
 SimpleInstaller.prototype.downloadProgram = function* () {
@@ -71,12 +70,20 @@ SimpleInstaller.prototype.downloadProgram = function* () {
 SimpleInstaller.prototype.installProgram = function () {
 	var info = this.info;
 	console.log(this.installMessage.cyan);
-	var prefix = info.prefix || '';
-	var postfix = info.postfix || '';
-	shelljs.exec(prefix + info.name + postfix);
+	var prefix = valueOrFallback(info.prefix, '');
+	var postfix = valueOrFallback(info.postfix, '');
+	var command = prefix + info.name + postfix;
+	if (!this.skipDownload) {
+		command = 'cd ' + this.tempFolder + '&&' + command;
+	}
+	shelljs.exec(command);
 	shellHandler.throwIfHasErrors('can\'t install program ' + info.name);
 };
 SimpleInstaller._simulateFsError = false;
+
+function valueOrFallback(value, fallback) {
+	return value || fallback;
+}
 
 function download(url, dest, cb) {
 	var file = fs.createWriteStream(dest);
